@@ -1,5 +1,6 @@
 let allRecipes = [];
-let activeTags = [];  
+let activeTags = [];
+let searchQuery = ""; 
 
 class RecipeCard {
     constructor(recipe) {
@@ -72,22 +73,21 @@ function createIngredientFilter(recipes) {
     const ingredientSelect = document.getElementById('ingredient-filter');
     const ingredients = new Set();
 
-    
     recipes.forEach(recipe => {
         recipe.ingredients.forEach(ingredient => {
-            ingredients.add(ingredient.ingredient);
+            ingredients.add(ingredient.ingredient.toLowerCase().trim()); 
         });
     });
 
-    
-    ingredients.forEach(ingredient => {
-        const option = document.createElement('option');
-        option.value = ingredient;
-        option.textContent = ingredient;
-        ingredientSelect.appendChild(option);
-    });
+    [...ingredients]
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(ingredient => {
+            const option = document.createElement('option');
+            option.value = ingredient;
+            option.textContent = ingredient;
+            ingredientSelect.appendChild(option);
+        });
 
-    
     ingredientSelect.addEventListener('change', (event) => {
         const selectedIngredient = event.target.value;
         if (selectedIngredient) {
@@ -100,16 +100,27 @@ function filterAndDisplayRecipes(recipes) {
     const recipeSection = document.querySelector('.recipe-section');
 
     const filteredRecipes = recipes.filter(recipe => {
-        return activeTags.every(tag => 
-            recipe.ingredients.some(ingredient => ingredient.ingredient === tag)
+        const matchesSearchQuery =
+            searchQuery === "" ||
+            recipe.name.toLowerCase().includes(searchQuery) ||
+            recipe.description.toLowerCase().includes(searchQuery) ||
+            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(searchQuery));
+
+        const matchesTags = activeTags.every(tag =>
+            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().trim() === tag)
         );
+
+        return matchesSearchQuery && matchesTags;
     });
 
     displayRecipes(filteredRecipes, recipeSection);
+
+    const recipeCount = filteredRecipes.length;
+    document.getElementById('recipe-count').textContent = `Nombre de recettes affichées : ${recipeCount}`;
 }
 
 function displayRecipes(recipes, recipeSection) {
-    recipeSection.innerHTML = '';  
+    recipeSection.innerHTML = '';
 
     const fragment = document.createDocumentFragment();
 
@@ -121,9 +132,10 @@ function displayRecipes(recipes, recipeSection) {
     recipeSection.appendChild(fragment);
 }
 
-function addTag(selectedIngredient) {
-    if (!activeTags.includes(selectedIngredient)) {
-        activeTags.push(selectedIngredient);
+function addTag(tag) {
+    const normalizedTag = tag.toLowerCase().trim(); 
+    if (!activeTags.includes(normalizedTag)) {
+        activeTags.push(normalizedTag);
         updateTags();
     }
 }
@@ -135,7 +147,7 @@ function removeTag(tag) {
 
 function updateTags() {
     const tagContainer = document.getElementById('selected-tags');
-    tagContainer.innerHTML = '';  
+    tagContainer.innerHTML = '';
 
     activeTags.forEach(tag => {
         const tagElement = document.createElement('span');
@@ -147,18 +159,38 @@ function updateTags() {
         removeButton.classList.add('remove-tag');
         removeButton.addEventListener('click', () => {
             removeTag(tag);
-            filterAndDisplayRecipes(allRecipes);  
+            filterAndDisplayRecipes(allRecipes); 
         });
 
         tagElement.appendChild(removeButton);
         tagContainer.appendChild(tagElement);
     });
 
-    filterAndDisplayRecipes(allRecipes);
+    filterAndDisplayRecipes(allRecipes); 
+}
+
+function handleSearchInput(event) {
+    searchQuery = event.target.value.trim().toLowerCase(); 
+    filterAndDisplayRecipes(allRecipes); 
+}
+
+function handleSearchSubmit(event) {
+    event.preventDefault(); 
+
+    const searchInput = document.querySelector('.text-input');
+    const query = searchInput.value.trim().toLowerCase();
+
+    if (query && !activeTags.includes(query)) {
+        addTag(query); 
+    }
+
+    searchInput.value = ''; 
+    searchQuery = ""; 
+    filterAndDisplayRecipes(allRecipes); 
 }
 
 async function loadRecipes() {
-    const recipeSection = document.querySelector('.recipe-section'); 
+    const recipeSection = document.querySelector('.recipe-section');
 
     if (!recipeSection) {
         console.error("L'élément 'recipe-section' est introuvable.");
@@ -175,9 +207,12 @@ async function loadRecipes() {
         const data = await response.json();
 
         if (data && Array.isArray(data.recipes)) {
-            allRecipes = data.recipes;  
+            allRecipes = data.recipes;
             createIngredientFilter(data.recipes);
             displayRecipes(data.recipes, recipeSection);
+
+            const totalRecipes = allRecipes.length;
+            document.getElementById('recipe-count').textContent = `Nombre total de recettes : ${totalRecipes}`;
         } else {
             console.error('Données des recettes non trouvées ou format invalide');
             recipeSection.innerHTML = '<p>Pas de recettes disponibles.</p>';
@@ -189,6 +224,9 @@ async function loadRecipes() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('.text-input');
+    searchInput.addEventListener('input', handleSearchInput); 
+    document.querySelector('.search-container form').addEventListener('submit', handleSearchSubmit); // Recherche par bouton
     loadRecipes();
 });
 
