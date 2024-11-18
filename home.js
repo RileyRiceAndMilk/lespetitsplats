@@ -1,9 +1,12 @@
+let allRecipes = [];  
+let activeTags = []; 
+
 class RecipeCard {
     constructor(recipe) {
         this.recipe = recipe;
     }
 
-    static createCard(recipe) { 
+    static createCard(recipe) {
         const card = new RecipeCard(recipe);
         return card.createCardContent();
     }
@@ -65,18 +68,16 @@ class RecipeCard {
     }
 }
 
-
 function createIngredientFilter(recipes) {
     const ingredientSelect = document.getElementById('ingredient-filter');
     const ingredients = new Set();
 
-   
     recipes.forEach(recipe => {
         recipe.ingredients.forEach(ingredient => {
             ingredients.add(ingredient.ingredient);
         });
     });
-  
+
     ingredients.forEach(ingredient => {
         const option = document.createElement('option');
         option.value = ingredient;
@@ -84,19 +85,21 @@ function createIngredientFilter(recipes) {
         ingredientSelect.appendChild(option);
     });
 
-    
     ingredientSelect.addEventListener('change', (event) => {
         const selectedIngredient = event.target.value;
-        filterAndDisplayRecipes(recipes, selectedIngredient);
-        updateTags(selectedIngredient);
+        if (selectedIngredient) {
+            addTag(selectedIngredient);
+        }
     });
 }
 
-function filterAndDisplayRecipes(recipes, selectedIngredient) {
+function filterAndDisplayRecipes(recipes) {
     const recipeSection = document.querySelector('.recipe-section');
 
     const filteredRecipes = recipes.filter(recipe => {
-        return recipe.ingredients.some(ingredient => ingredient.ingredient === selectedIngredient || selectedIngredient === '');
+        return activeTags.every(tag => 
+            recipe.ingredients.some(ingredient => ingredient.ingredient === tag)
+        );
     });
 
     displayRecipes(filteredRecipes, recipeSection);
@@ -115,29 +118,41 @@ function displayRecipes(recipes, recipeSection) {
     recipeSection.appendChild(fragment);
 }
 
+function addTag(selectedIngredient) {
+    if (!activeTags.includes(selectedIngredient)) {
+        activeTags.push(selectedIngredient);
+        updateTags();
+    }
+}
 
-function updateTags(selectedIngredient) {
+function removeTag(tag) {
+    activeTags = activeTags.filter(activeTag => activeTag !== tag);
+    updateTags();
+}
+
+function updateTags() {
     const tagContainer = document.getElementById('selected-tags');
-    if (selectedIngredient && !Array.from(tagContainer.children).some(tag => tag.textContent === selectedIngredient)) {
-    
-        const tag = document.createElement('span');
-        tag.classList.add('ingredient-tag');
-        tag.textContent = selectedIngredient;
+    tagContainer.innerHTML = '';  
 
-       
+    activeTags.forEach(tag => {
+        const tagElement = document.createElement('span');
+        tagElement.classList.add('ingredient-tag');
+        tagElement.textContent = tag;
+
         const removeButton = document.createElement('button');
-        removeButton.textContent = 'X';
+        removeButton.textContent = '❌';
         removeButton.classList.add('remove-tag');
         removeButton.addEventListener('click', () => {
-            tag.remove();
-            const ingredientSelect = document.getElementById('ingredient-filter');
-            ingredientSelect.value = '';  
-            filterAndDisplayRecipes(recipes, '');  
+            removeTag(tag);
+            filterAndDisplayRecipes(allRecipes);  
         });
 
-        tag.appendChild(removeButton);
-        tagContainer.appendChild(tag);
-    }
+        tagElement.appendChild(removeButton);
+        tagContainer.appendChild(tagElement);
+    });
+
+
+    filterAndDisplayRecipes(allRecipes);
 }
 
 async function loadRecipes() {
@@ -158,7 +173,8 @@ async function loadRecipes() {
         const data = await response.json();
 
         if (data && Array.isArray(data.recipes)) {
-            createIngredientFilter(data.recipes); 
+            allRecipes = data.recipes;  
+            createIngredientFilter(data.recipes);
             displayRecipes(data.recipes, recipeSection);
         } else {
             console.error('Données des recettes non trouvées ou format invalide');
