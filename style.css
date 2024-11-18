@@ -22,18 +22,18 @@ header {
 .sentence-and-container {
     display: flex;
     flex-direction: column; 
-    align-items: center;    /* Centre horizontalement les éléments */
+    align-items: center;    
     justify-content: center; 
 }
 
-/* Style pour le h2 */
+
 h2 {
     color: #FFD15B;
-    margin-bottom: 20px; /* Espacement avec le conteneur de recherche */
+    margin-bottom: 20px; 
     font-Size: 44px;
 }
 
-/* Conteneur pour la barre de recherche */
+
 .search-container {
     display: flex;
     justify-content: center;
@@ -162,4 +162,59 @@ h2 {
 
 .button-mobile-version:hover {
     background-color: #e53e35;
+}
+
+
+#ingredient-filter {
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 11px;
+    margin-bottom: 20px;
+    width: 195px;
+    max-width: 300px;
+    background-color: #f9f9f9;
+    color: #1B1B1B;
+    cursor: pointer;
+}
+
+
+#selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+.ingredient-tag {
+    background-color: #FFD15B;
+    color: #1B1B1B;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.remove-tag {
+    background: none;
+    border: none;
+    color: #FFD15B;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+}
+
+
+#ingredient-filter option {
+    padding: 10px;
+}
+
+
+#ingredient-filter:focus {
+    border-color: #0056b3;
+    outline: none;
 }
