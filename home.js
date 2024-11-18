@@ -226,7 +226,7 @@ async function loadRecipes() {
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.querySelector('.text-input');
     searchInput.addEventListener('input', handleSearchInput); 
-    document.querySelector('.search-container form').addEventListener('submit', handleSearchSubmit); // Recherche par bouton
+    document.querySelector('.search-container form').addEventListener('submit', handleSearchSubmit); 
     loadRecipes();
 });
 
