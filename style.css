@@ -1,0 +1,165 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.content {
+    color: white;
+    text-align: center;
+    padding: 50px;
+    background: rgba(0, 0, 0, 0.5); 
+}
+
+header {
+    background-image: url('lampos-aritonang-24gR_9lCdes-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.sentence-and-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    /* Centre horizontalement les éléments */
+    justify-content: center; 
+}
+
+/* Style pour le h2 */
+h2 {
+    color: #FFD15B;
+    margin-bottom: 20px; /* Espacement avec le conteneur de recherche */
+    font-Size: 44px;
+}
+
+/* Conteneur pour la barre de recherche */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px; 
+}
+
+.text-input {
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; 
+}
+
+.recipe-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recipe-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+}
+
+.recipe-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.image-container {
+    position: relative;
+}
+
+.recipe-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    position: relative; 
+}
+
+.time-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;  
+    background-color: #FFD15B;
+    color: #000000;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px; 
+}
+
+
+
+.recipe-card h2 {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.recipe-time {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.recipe-description {
+    font-size: 0.9rem;
+    color: #444;
+    margin: 10px 0;
+}
+
+.ingredients-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.ingredients-list li {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.text-input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+    margin-right: 10px;
+}
+
+.button-mobile-version {
+    background-color: #ff6347;
+    border: none;
+    padding: 10px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-mobile-version:hover {
+    background-color: #e53e35;
+}
