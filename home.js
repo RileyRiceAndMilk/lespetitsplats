@@ -3,7 +3,7 @@ class RecipeCard {
         this.recipe = recipe;
     }
 
-    static createCard(recipe) {
+    static createCard(recipe) { 
         const card = new RecipeCard(recipe);
         return card.createCardContent();
     }
@@ -13,12 +13,10 @@ class RecipeCard {
         card.classList.add('recipe-card');
         card.setAttribute('aria-labelledby', `recipe-${this.recipe.id}`);
 
-       
         const link = document.createElement('a');
         link.href = `recipe.html?id=${this.recipe.id}`;
         link.setAttribute('aria-label', `Voir la recette de ${this.recipe.name}`);
 
-     
         const imageContainer = document.createElement('div');
         imageContainer.classList.add('image-container');
 
@@ -34,7 +32,6 @@ class RecipeCard {
         imageContainer.appendChild(img);
         imageContainer.appendChild(timeTag);
 
-      
         const title = document.createElement('h2');
         title.id = `recipe-${this.recipe.id}`;
         title.textContent = this.recipe.name;
@@ -56,7 +53,6 @@ class RecipeCard {
             ingredientsList.appendChild(ingredientItem);
         });
 
-        
         link.appendChild(imageContainer);
         link.appendChild(title);
         link.appendChild(time);
@@ -66,6 +62,81 @@ class RecipeCard {
         card.appendChild(link);
 
         return card;
+    }
+}
+
+
+function createIngredientFilter(recipes) {
+    const ingredientSelect = document.getElementById('ingredient-filter');
+    const ingredients = new Set();
+
+   
+    recipes.forEach(recipe => {
+        recipe.ingredients.forEach(ingredient => {
+            ingredients.add(ingredient.ingredient);
+        });
+    });
+  
+    ingredients.forEach(ingredient => {
+        const option = document.createElement('option');
+        option.value = ingredient;
+        option.textContent = ingredient;
+        ingredientSelect.appendChild(option);
+    });
+
+    
+    ingredientSelect.addEventListener('change', (event) => {
+        const selectedIngredient = event.target.value;
+        filterAndDisplayRecipes(recipes, selectedIngredient);
+        updateTags(selectedIngredient);
+    });
+}
+
+function filterAndDisplayRecipes(recipes, selectedIngredient) {
+    const recipeSection = document.querySelector('.recipe-section');
+
+    const filteredRecipes = recipes.filter(recipe => {
+        return recipe.ingredients.some(ingredient => ingredient.ingredient === selectedIngredient || selectedIngredient === '');
+    });
+
+    displayRecipes(filteredRecipes, recipeSection);
+}
+
+function displayRecipes(recipes, recipeSection) {
+    recipeSection.innerHTML = '';  
+
+    const fragment = document.createDocumentFragment();
+
+    recipes.forEach(recipe => {
+        const card = RecipeCard.createCard(recipe);
+        fragment.appendChild(card);
+    });
+
+    recipeSection.appendChild(fragment);
+}
+
+
+function updateTags(selectedIngredient) {
+    const tagContainer = document.getElementById('selected-tags');
+    if (selectedIngredient && !Array.from(tagContainer.children).some(tag => tag.textContent === selectedIngredient)) {
+    
+        const tag = document.createElement('span');
+        tag.classList.add('ingredient-tag');
+        tag.textContent = selectedIngredient;
+
+       
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'X';
+        removeButton.classList.add('remove-tag');
+        removeButton.addEventListener('click', () => {
+            tag.remove();
+            const ingredientSelect = document.getElementById('ingredient-filter');
+            ingredientSelect.value = '';  
+            filterAndDisplayRecipes(recipes, '');  
+        });
+
+        tag.appendChild(removeButton);
+        tagContainer.appendChild(tag);
     }
 }
 
@@ -87,6 +158,7 @@ async function loadRecipes() {
         const data = await response.json();
 
         if (data && Array.isArray(data.recipes)) {
+            createIngredientFilter(data.recipes); 
             displayRecipes(data.recipes, recipeSection);
         } else {
             console.error('Données des recettes non trouvées ou format invalide');
@@ -96,19 +168,6 @@ async function loadRecipes() {
         console.error('Erreur lors du chargement des recettes:', error);
         recipeSection.innerHTML = '<p>Erreur de chargement des recettes. Essayez plus tard.</p>';
     }
-}
-
-function displayRecipes(recipes, recipeSection) {
-    recipeSection.innerHTML = '';  
-
-    const fragment = document.createDocumentFragment();
-
-    recipes.forEach(recipe => {
-        const card = RecipeCard.createCard(recipe);
-        fragment.appendChild(card);
-    });
-
-    recipeSection.appendChild(fragment);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
