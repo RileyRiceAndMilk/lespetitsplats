@@ -1,5 +1,5 @@
-let allRecipes = [];  
-let activeTags = []; 
+let allRecipes = [];
+let activeTags = [];  
 
 class RecipeCard {
     constructor(recipe) {
@@ -72,12 +72,14 @@ function createIngredientFilter(recipes) {
     const ingredientSelect = document.getElementById('ingredient-filter');
     const ingredients = new Set();
 
+    
     recipes.forEach(recipe => {
         recipe.ingredients.forEach(ingredient => {
             ingredients.add(ingredient.ingredient);
         });
     });
 
+    
     ingredients.forEach(ingredient => {
         const option = document.createElement('option');
         option.value = ingredient;
@@ -85,6 +87,7 @@ function createIngredientFilter(recipes) {
         ingredientSelect.appendChild(option);
     });
 
+    
     ingredientSelect.addEventListener('change', (event) => {
         const selectedIngredient = event.target.value;
         if (selectedIngredient) {
@@ -150,7 +153,6 @@ function updateTags() {
         tagElement.appendChild(removeButton);
         tagContainer.appendChild(tagElement);
     });
-
 
     filterAndDisplayRecipes(allRecipes);
 }
