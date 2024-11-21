@@ -1,6 +1,16 @@
-let allRecipes = [];
-let activeTags = [];
-let searchQuery = "";
+let currentRecipeIndex = 0; 
+let allRecipes = []; 
+let activeTags = []; 
+let searchQuery = ""; 
+
+function updateRecipeCount(recipes) {
+    const recipeCountElement = document.getElementById('recipe-count');
+    if (recipeCountElement) {
+        const recipeCount = recipes.length;
+        const recipeText = recipeCount === 1 ? 'recette' : 'recettes';
+        recipeCountElement.textContent = `${recipeCount} ${recipeText}`;
+    }
+}
 
 class RecipeCard {
     constructor(recipe) {
@@ -16,10 +26,6 @@ class RecipeCard {
         const card = document.createElement('article');
         card.classList.add('recipe-card');
         card.setAttribute('aria-labelledby', `recipe-${this.recipe.id}`);
-
-        const link = document.createElement('a');
-        link.href = `recipe.html?id=${this.recipe.id}`;
-        link.setAttribute('aria-label', `Voir la recette de ${this.recipe.name}`);
 
         const imageContainer = document.createElement('div');
         imageContainer.classList.add('image-container');
@@ -40,13 +46,17 @@ class RecipeCard {
         title.id = `recipe-${this.recipe.id}`;
         title.textContent = this.recipe.name;
 
-        const time = document.createElement('p');
-        time.classList.add('recipe-time');
-        time.textContent = `⏱️ Temps: ${this.recipe.time} minutes`;
+        const descriptionTitle = document.createElement('h3');
+        descriptionTitle.classList.add('description-title');
+        descriptionTitle.textContent = 'Recette';
 
         const description = document.createElement('p');
         description.classList.add('recipe-description');
         description.textContent = this.recipe.description;
+
+        const ingredientsTitle = document.createElement('h3');
+        ingredientsTitle.classList.add('ingredients-title');
+        ingredientsTitle.textContent = 'Ingrédients';
 
         const ingredientsList = document.createElement('ul');
         ingredientsList.classList.add('ingredients-list');
@@ -57,251 +67,196 @@ class RecipeCard {
             ingredientsList.appendChild(ingredientItem);
         });
 
-        link.appendChild(imageContainer);
-        link.appendChild(title);
-        link.appendChild(time);
-        link.appendChild(description);
-        link.appendChild(ingredientsList);
+        card.appendChild(imageContainer);
+        card.appendChild(title);
+        card.appendChild(descriptionTitle);
+        card.appendChild(description);
+        card.appendChild(ingredientsTitle);
+        card.appendChild(ingredientsList);
 
-        card.appendChild(link);
+        card.addEventListener('click', (event) => {
+            event.preventDefault();
+            openRecipeLightbox(this.recipe, allRecipes.indexOf(this.recipe));
+        });
 
         return card;
     }
 }
 
-function createIngredientFilter(recipes) {
-    const ingredientSelect = document.getElementById('ingredient-filter');
+function openRecipeLightbox(recipe, index) {
+    currentRecipeIndex = index;
+
+    const lightboxOverlay = document.createElement('div');
+    lightboxOverlay.classList.add('lightbox-overlay');
+
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox';
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-label', 'Recette en détail');
+
+    const img = document.createElement('img');
+    img.src = `recipes/${recipe.image}`;
+    img.alt = `Image de ${recipe.name}`;
+    img.classList.add('lightbox-image');
+
+    const title = document.createElement('h2');
+    title.textContent = recipe.name;
+
+    const descriptionTitle = document.createElement('h3');
+    descriptionTitle.textContent = 'Recette';
+    descriptionTitle.classList.add('description-title');
+
+    const description = document.createElement('p');
+    description.textContent = recipe.description;
+    description.classList.add('recipe-description');
+
     
-    if (!ingredientSelect) {
-        console.error("L'élément 'ingredient-filter' est introuvable.");
-        return;
+    const ingredientsTitle = document.createElement('h3');
+    ingredientsTitle.classList.add('ingredients-title');
+    ingredientsTitle.textContent = 'Ingrédients';
+
+    
+    const ingredientsList = document.createElement('ul');
+    recipe.ingredients.forEach(ingredient => {
+        const ingredientItem = document.createElement('li');
+        const ingredientText = `${ingredient.quantity ? ingredient.quantity : ''} ${ingredient.unit ? ingredient.unit : ''} ${ingredient.ingredient}`;
+        ingredientItem.textContent = ingredientText.trim();
+        ingredientsList.appendChild(ingredientItem);
+    });
+
+   
+    const createArrowButton = (direction) => {
+        const arrowButton = document.createElement('button');
+        arrowButton.classList.add(`lightbox-${direction}`);
+        
+        const arrow = document.createElement('span');
+        arrow.innerHTML = direction === 'prev' ? '&#10094;' : '&#10095;';
+        
+        arrowButton.appendChild(arrow);
+        arrowButton.addEventListener('click', direction === 'prev' ? showPrevRecipe : showNextRecipe);
+        return arrowButton;
     }
 
-    const ingredients = new Set();
+    const prevButton = createArrowButton('prev');
+    const nextButton = createArrowButton('next');
 
-    recipes.forEach(recipe => {
-        recipe.ingredients.forEach(ingredient => {
-            ingredients.add(ingredient.ingredient.toLowerCase().trim());
-        });
+   
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '&times;';
+    closeButton.classList.add('close-lightbox');
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(lightboxOverlay); 
     });
 
-    [...ingredients]
-        .sort((a, b) => a.localeCompare(b))
-        .forEach(ingredient => {
-            const option = document.createElement('option');
-            option.value = ingredient;
-            option.textContent = ingredient;
-            ingredientSelect.appendChild(option);
-        });
+    
+    lightbox.appendChild(img);
+    lightbox.appendChild(title);
+    lightbox.appendChild(descriptionTitle);
+    lightbox.appendChild(description);
 
-    ingredientSelect.addEventListener('change', (event) => {
-        const selectedIngredient = event.target.value;
-        if (selectedIngredient) {
-            addTag(selectedIngredient);
-        }
-    });
+  
+    lightbox.appendChild(ingredientsTitle);
+    lightbox.appendChild(ingredientsList);
+
+   
+    lightboxOverlay.appendChild(closeButton); 
+    lightboxOverlay.appendChild(prevButton);
+    lightboxOverlay.appendChild(nextButton);
+    lightboxOverlay.appendChild(lightbox);
+
+    document.body.appendChild(lightboxOverlay);
 }
 
-function filterAndDisplayRecipes(recipes) {
-    const recipeSection = document.querySelector('.recipe-section');
 
-    if (!recipeSection) {
-        console.error("L'élément 'recipe-section' est introuvable.");
-        return;
+
+function showPrevRecipe() {
+    if (currentRecipeIndex > 0) {
+        currentRecipeIndex--;
+        updateLightboxRecipe(allRecipes[currentRecipeIndex]);
     }
+}
 
+
+function showNextRecipe() {
+    if (currentRecipeIndex < allRecipes.length - 1) {
+        currentRecipeIndex++;
+        updateLightboxRecipe(allRecipes[currentRecipeIndex]);
+    }
+}
+
+
+function updateLightboxRecipe(recipe) {
+    const lightbox = document.querySelector('.lightbox');
+    if (lightbox) {
+        const img = lightbox.querySelector('img');
+        const title = lightbox.querySelector('h2');
+        const description = lightbox.querySelector('p');
+        const ingredientsList = lightbox.querySelector('ul');
+
+        img.src = `recipes/${recipe.image}`;
+        img.alt = `Image de ${recipe.name}`;
+        title.textContent = recipe.name;
+        description.textContent = recipe.description;
+
+        
+        ingredientsList.innerHTML = '';
+        recipe.ingredients.forEach(ingredient => {
+            const ingredientItem = document.createElement('li');
+            const ingredientText = `${ingredient.quantity ? ingredient.quantity : ''} ${ingredient.unit ? ingredient.unit : ''} ${ingredient.ingredient}`;
+            ingredientItem.textContent = ingredientText.trim();
+            ingredientsList.appendChild(ingredientItem);
+        });
+    }
+}
+
+
+function filterAndDisplayRecipes(recipes) {
     const filteredRecipes = recipes.filter(recipe => {
-        const matchesSearchQuery =
-            searchQuery === "" ||
-            recipe.name.toLowerCase().includes(searchQuery) ||
-            recipe.description.toLowerCase().includes(searchQuery) ||
-            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(searchQuery));
-
-        const matchesTags = activeTags.every(tag =>
-            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().trim() === tag)
-        );
-
+        const matchesSearchQuery = recipe.name.toLowerCase().includes(searchQuery);
+        const matchesTags = activeTags.every(tagObject => {
+            if (tagObject.type === 'ingredient') {
+                return recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().trim() === tagObject.tag);
+            }
+            if (tagObject.type === 'ustensil') {
+                return recipe.ustensils && recipe.ustensils.some(ustensil => ustensil.toLowerCase().trim() === tagObject.tag);
+            }
+            if (tagObject.type === 'appliance') {
+                return recipe.appliance.toLowerCase().trim() === tagObject.tag;
+            }
+            return false;
+        });
         return matchesSearchQuery && matchesTags;
     });
 
-    displayRecipes(filteredRecipes, recipeSection);
-
-    const recipeCount = filteredRecipes.length;
-    document.getElementById('recipe-count').textContent = `Nombre de recettes affichées : ${recipeCount}`;
+    displayRecipes(filteredRecipes, document.querySelector('.recipe-section'));
+    updateRecipeCount(filteredRecipes);
 }
 
-function displayRecipes(recipes, recipeSection) {
-    recipeSection.innerHTML = '';
-
-    const fragment = document.createDocumentFragment();
-
+function displayRecipes(recipes, container) {
+    container.innerHTML = ''; 
     recipes.forEach(recipe => {
-        const card = RecipeCard.createCard(recipe);
-        fragment.appendChild(card);
+        const recipeCard = RecipeCard.createCard(recipe);
+        container.appendChild(recipeCard);
     });
-
-    recipeSection.appendChild(fragment);
-}
-
-function addTag(tag) {
-    const normalizedTag = tag.toLowerCase().trim();
-    if (!activeTags.includes(normalizedTag)) {
-        activeTags.push(normalizedTag);
-        updateTags();
-    }
-}
-
-function removeTag(tag) {
-    activeTags = activeTags.filter(activeTag => activeTag !== tag);
-    updateTags();
-}
-
-function updateTags() {
-    const tagContainer = document.getElementById('selected-tags');
-    
-    if (!tagContainer) {
-        console.error("L'élément 'selected-tags' est introuvable.");
-        return;
-    }
-
-    tagContainer.innerHTML = '';
-
-    activeTags.forEach(tag => {
-        const tagElement = document.createElement('span');
-        tagElement.classList.add('ingredient-tag');
-        tagElement.textContent = tag;
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = '❌';
-        removeButton.classList.add('remove-tag');
-        removeButton.addEventListener('click', () => {
-            removeTag(tag);
-            filterAndDisplayRecipes(allRecipes);
-        });
-
-        tagElement.appendChild(removeButton);
-        tagContainer.appendChild(tagElement);
-    });
-
-    filterAndDisplayRecipes(allRecipes);
-}
-
-function handleSearchInput(event) {
-    searchQuery = event.target.value.trim().toLowerCase();
-    filterAndDisplayRecipes(allRecipes);
-}
-
-function handleSearchSubmit(event) {
-    event.preventDefault();
-
-    const searchInput = document.querySelector('.text-input');
-    const query = searchInput.value.trim().toLowerCase();
-
-    if (query && !activeTags.includes(query)) {
-        addTag(query);
-    }
-
-    searchInput.value = '';
-    searchQuery = "";
-    filterAndDisplayRecipes(allRecipes);
 }
 
 async function loadRecipes() {
-    const recipeSection = document.querySelector('.recipe-section');
-
-    if (!recipeSection) {
-        console.error("L'élément 'recipe-section' est introuvable.");
-        return;
-    }
-
     try {
         const response = await fetch('./recipes.json');
-
-        if (!response.ok) {
-            throw new Error(`Erreur de réseau: ${response.statusText}`);
-        }
-
         const data = await response.json();
-
         if (data && Array.isArray(data.recipes)) {
             allRecipes = data.recipes;
-            createIngredientFilter(data.recipes);
-            displayRecipes(data.recipes, recipeSection);
-
-            const totalRecipes = allRecipes.length;
-            document.getElementById('recipe-count').textContent = `Nombre total de recettes : ${totalRecipes}`;
+            updateRecipeCount(allRecipes);
+            displayRecipes(allRecipes, document.querySelector('.recipe-section'));
         } else {
-            console.error('Données des recettes non trouvées ou format invalide');
-            recipeSection.innerHTML = '<p>Pas de recettes disponibles.</p>';
+            console.error("Le fichier JSON ne contient pas un tableau de recettes.");
         }
     } catch (error) {
         console.error('Erreur lors du chargement des recettes:', error);
-        recipeSection.innerHTML = '<p>Erreur de chargement des recettes. Essayez plus tard.</p>';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.querySelector('.text-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', handleSearchInput);
-    } else {
-        console.error("L'élément 'text-input' est introuvable.");
-    }
-
-    const searchForm = document.querySelector('.search-container form');
-    if (searchForm) {
-        searchForm.addEventListener('submit', handleSearchSubmit);
-    } else {
-        console.error("Le formulaire de recherche est introuvable.");
-    }
-
     loadRecipes();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
