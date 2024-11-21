@@ -4,10 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="style.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/css?family=DM+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
     <script type="module" src="./home.js" defer></script>
     <link rel="icon" href="favicon.png" type="image/x-icon">
     <title>Les Petits Plats</title>
@@ -18,7 +17,7 @@
             <img src="logo.png" class="logo" alt="Les Petits Plats - Accueil" />
         </a>  
         <div class="sentence-and-container">
-            <h2> CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES </h2>
+            <h2>CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES</h2>
             <div class="search-container">
                 <form action="/rechercher" method="get" class="search-form">
                     <input type="text" class="text-input" name="query" placeholder="Rechercher une recette, un ingrédient, ...">
@@ -31,22 +30,47 @@
     </header>
 
     <main id="main" aria-labelledby="page-title">
-        <div class="ingredient-filter-container">
-            <select id="ingredient-filter" aria-label="Filtrer par ingrédient">
-                <option value="">Ingrédients</option>
-            </select>
+        <div class="filter-container">
+            <div class="ingredient-filter-container">
+                <label for="ingredient-filter" class="filter-label">Ingrédients</label>
+                <select id="ingredient-filter" aria-label="Filtrer par ingrédient">
+                    <option value="">Ingrédients</option>
+                </select>
+            </div>
+
+            <div class="appliance-filter-container">
+                <label for="appliance-filter" class="filter-label">Appareils</label>
+                <select id="appliance-filter" aria-label="Filtrer par appareil">
+                    <option value="">Appareils</option>
+                </select>
+            </div>
+
+            <div class="utensil-filter-container">
+                <label for="utensil-filter" class="filter-label">Ustensiles</label>
+                <select id="utensil-filter" aria-label="Filtrer par ustensile">
+                    <option value="">Ustensiles</option>
+                </select>
+            </div>
+            <div id="recipe-count" class="recipe-count-container">
+                 <span id="total-recipes">...</span>
+            </div>
         </div>
-        
-        <div id="selected-tags" class="selected-tags-container"></div>
 
-        <!-- Nouveau div pour afficher le nombre de recettes -->
-        <div id="recipe-count" class="recipe-count-container"></div>
+        <div id="selected-tags" class="selected-tags-container" aria-live="polite" aria-relevant="additions">
+           
+        </div>
 
-        <div id="recettes-container" class="recipe-section"></div>
-        
+        <div id="recipe-count" class="recipe-count-container">
+           
+        </div>
+
+        <div id="recettes-container" class="recipe-section">
+
+        </div>
     </main>
 
-    <script type="module" src="./home.js"></script>
+    <script type="module" src="./home.js" defer></script>
+    <script type="module" src="./lightbox.js" defer></script>
 </body>
 </html>
 
