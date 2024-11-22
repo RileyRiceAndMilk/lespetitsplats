@@ -1,0 +1,453 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.content {
+    color: white;
+    text-align: center;
+    padding: 50px;
+    background: rgba(0, 0, 0, 0.5); 
+}
+
+header {
+    background-image: url('lampos-aritonang-24gR_9lCdes-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.sentence-and-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    justify-content: center; 
+}
+
+h2 {
+    color: #FFD15B;
+    margin-bottom: 20px; 
+    font-size: 44px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px; 
+}
+
+.text-input {
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; 
+}
+
+.recipe-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recipe-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    width: 300px;  
+}
+
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+}
+
+.recipe-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.image-container {
+    position: relative;
+}
+
+.recipe-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    position: relative; 
+}
+
+.time-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;  
+    background-color: #FFD15B;
+    color: #000000;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px; 
+}
+
+.card-content-container {
+    padding: 20px;
+}
+
+
+.recipe-card h2 {
+    font-family: 'Anton', sans-serif; 
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: 400;
+    color: #000000;
+}
+
+.recette-title , .ingredients-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #7A7A7A;
+    margin-top: 10px;
+    text-align: left;
+    letter-spacing: 0.09em;
+}
+
+.recipe-time {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.description-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.recipe-description {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    line-height: 19px;
+    color: #1B1B1B;
+    font-weight: 400;
+    max-height: 100px; 
+    overflow: hidden;
+}
+
+.text-input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+    margin-right: 10px;
+}
+
+.button-mobile-version {
+    background-color: #ff6347;
+    border: none;
+    padding: 10px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-mobile-version:hover {
+    background-color: #e53e35;
+}
+
+#ingredient-selector, #appliance-selector, #utensil-selector {
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    width: 200px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+#selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.ingredients-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 10px;
+  display: grid;  
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;  
+}
+
+.ingredient-name {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1B1B1B;
+    line-height: 19px;
+}
+
+.ingredient-quantity {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: Grey;
+    line-height: 19.12px; 
+    margin-top: 5px; 
+}
+
+
+
+#selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.filter-tag {
+    background-color: #FFD15B;
+    color: #1B1B1B;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.filter-tag:hover {
+    background-color: #e5a800;
+}
+
+
+#ingredient-selector option,
+#appliance-selector option,
+#utensil-selector option {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.selected-tags-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+
+.filter-container {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.filter-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.ingredient-filter-container,
+.appliance-filter-container,
+.utensil-filter-container {
+    width: 250px;
+}
+
+select option {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.selected-tags-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* Style général de la lightbox */
+.lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+    overflow: auto; /* Permet de défiler à l'extérieur du contenu */
+}
+
+.lightbox-wrapper {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* La lightbox elle-même */
+.lightbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: none; /* Supprimer toute limite de hauteur pour permettre l'affichage complet */
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto; /* Permet le défilement si nécessaire */
+}
+
+/* Contenu de la lightbox, avec l'image et les informations */
+.lightbox img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    position: relative;
+}
+
+#lightbox-recipe-title {
+    font-size: 2rem;
+    margin-top: 15px;
+    color: #333;
+}
+
+/* Suppression des limites de hauteur sur la description */
+#lightbox-recipe-description {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    line-height: 19px;
+    color: #1B1B1B;
+    font-weight: 400;
+    max-height: none;   /* Aucune restriction de hauteur */
+    overflow: visible;  /* Le texte s'affiche entièrement sans couper */
+    padding-bottom: 10px; /* Un petit espace sous la description */
+}
+
+/* Gestion des ingrédients */
+#lightbox-recipe-ingredients {
+    margin-top: 20px;
+    list-style-type: none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#lightbox-recipe-ingredients li {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #444;
+}
+
+#lightbox-recipe-ingredients .ingredient-name {
+    font-weight: bold;
+}
+
+#lightbox-recipe-ingredients .ingredient-quantity {
+    font-style: italic;
+}
+
+/* Bouton de fermeture */
+.close-lightbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    z-index: 1010;
+}
+
+.close-lightbox:hover {
+    color: #ff5a5f;
+}
+
+/* Boutons de navigation */
+.nav-lightbox {
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #333;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1010;
+    transition: color 0.3s ease;
+}
+
+.nav-lightbox:hover {
+    color: #ff5a5f;
+}
+
+.prev {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.next {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nav-lightbox:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Animation d'apparition de la lightbox */
+.lightbox-overlay[aria-hidden="false"] {
+    display: flex;
+    opacity: 1;
+}
+
+.lightbox-overlay[aria-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+  
+  
+  
+  
+
+
+
+
