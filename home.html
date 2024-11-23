@@ -8,55 +8,57 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-    <script type="module" src="./home.js" defer></script>
+    <script type="module" src="./home2.js" defer></script>
     <link rel="icon" href="favicon.png" type="image/x-icon">
     <title>Les Petits Plats</title>
 </head>
 <body>
     <header>
+        <img src="lampos-aritonang-24gR_9lCdes-unsplash.jpg" alt="Background image" class="header-background">
         <a href="home.html" class="logo-link" tabindex="1">
             <img src="logo.png" class="logo" alt="Les Petits Plats - Accueil" />
-        </a>  
+        </a>
         <div class="sentence-and-container">
             <h2>CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN, SIMPLES ET DÉLICIEUSES</h2>
             <div class="search-container">
-                <input type="text" class="text-input" id="search-input" placeholder="Rechercher une recette, un ingrédient, ...">
-                <button class="button-mobile-version" id="search-button" type="button">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+                <div class="input-wrapper">
+                    <input type="text" class="text-input" id="search-input" placeholder="Rechercher une recette, un ingrédient, ...">
+                    <button class="button-mobile-version" id="search-button" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
             </div>
-                        
-        </div>
+        </div>      
     </header>
+    <main id="main">
+        <div class="filter-container-and-sentence">
+            <div class="filter-container">
+                <div class="ingredient-filter-container">
+                    <select id="ingredient-selector" aria-label="Filtrer par ingrédient">
+                        <option value="">Ingrédients</option>
+                    </select>
+                </div>
 
-    <main id="main" aria-labelledby="page-title">
-        <div class="filter-container">
-            <div class="ingredient-filter-container">
-                <select id="ingredient-selector" aria-label="Filtrer par ingrédient">
-                    <option value="">Ingrédients</option>
-                </select>
+                <div class="appliance-filter-container">
+                    <select id="appliance-selector" aria-label="Filtrer par appareil">
+                        <option value="">Appareils</option>
+                    </select>
+                </div>
+
+                <div class="utensil-filter-container">
+                    <select id="utensil-selector" aria-label="Filtrer par ustensile">
+                        <option value="">Ustensiles</option>
+                    </select>
+                </div>
             </div>
-
-            <div class="appliance-filter-container">
-                <select id="appliance-selector" aria-label="Filtrer par appareil">
-                    <option value="">Appareils</option>
-                </select>
-            </div>
-
-            <div class="utensil-filter-container">
-                <select id="utensil-selector" aria-label="Filtrer par ustensile">
-                    <option value="">Ustensiles</option>
-                </select>
-            </div>
-
             <div id="recipe-count" class="recipe-count-container">
-                <span id="total-recipes" aria-live="polite">...</span>
+                <span id="total-recipes" >...</span>
             </div>
         </div>
 
-        <div id="selected-tags" class="selected-tags-container" aria-live="polite" aria-relevant="additions">
+        <div id="selected-tags" class="selected-tags-container" >
         </div>
-
+    </div>
         <div class="recipe-section">
         </div>
     </main>
