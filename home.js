@@ -17,125 +17,90 @@ const selectedFilters = {
 const searchButton = document.querySelector('.button-mobile-version');
 const searchInput = document.querySelector('.text-input');
 
+
 const lightboxOverlay = document.createElement('div');
 lightboxOverlay.classList.add('lightbox-overlay');
 document.body.appendChild(lightboxOverlay);
 
-const lightboxWrapper = document.createElement('div');
-lightboxWrapper.classList.add('lightbox-wrapper');
-lightboxOverlay.appendChild(lightboxWrapper);
-
 const lightbox = document.createElement('div');
 lightbox.classList.add('lightbox');
-lightboxWrapper.appendChild(lightbox);
+lightboxOverlay.appendChild(lightbox);
 
-const closeLightbox = document.createElement('button');
-closeLightbox.textContent = '×';
-closeLightbox.classList.add('close-lightbox');
-lightboxOverlay.appendChild(closeLightbox);
+const lightboxClose = document.createElement('span');
+lightboxClose.classList.add('lightbox-close');
+lightboxClose.textContent = '×';
+lightbox.appendChild(lightboxClose);
 
-const prevButton = document.createElement('button');
-prevButton.textContent = '<';
-prevButton.classList.add('nav-lightbox', 'prev');
-prevButton.disabled = false;
-
-const nextButton = document.createElement('button');
-nextButton.textContent = '>';
-nextButton.classList.add('nav-lightbox', 'next');
-nextButton.disabled = false;
-
-lightboxOverlay.appendChild(prevButton);
-lightboxOverlay.appendChild(nextButton);
-
-let currentRecipeIndex = null;
+let currentRecipeIndex = 0;
 let currentRecipe = null;
 
 function openLightbox(recipe, index) {
     currentRecipe = recipe;
     currentRecipeIndex = index;
 
-    const img = document.createElement('img');
-    img.src = `recipes/${recipe.image}`;
-    img.alt = `Image de ${recipe.name}`;
-    img.id = 'lightbox-image';
+   
+    const lightboxImage = document.createElement('img');
+    lightboxImage.src = `recipes/${recipe.image}`;
+    lightboxImage.alt = `Image de ${recipe.name}`;
+    lightbox.appendChild(lightboxImage);
 
-    const title = document.createElement('h2');
-    title.textContent = recipe.name;
-    title.id = 'lightbox-recipe-title';
+    const lightboxTitle = document.createElement('h3');
+    lightboxTitle.textContent = recipe.name;
+    lightbox.appendChild(lightboxTitle);
 
-    const recetteTitle = document.createElement('h3');
-    recetteTitle.classList.add('recette-title');
-    recetteTitle.textContent = 'RECETTE';
-
-    const description = document.createElement('p');
-    description.textContent = recipe.description;
-    description.id = 'lightbox-recipe-description';
-
-    const ingredientsTitle = document.createElement('h4');
-    ingredientsTitle.classList.add('ingredients-title');
-    ingredientsTitle.textContent = 'INGRÉDIENTS';
+    const lightboxDescription = document.createElement('p');
+    lightboxDescription.textContent = recipe.description;
+    lightbox.appendChild(lightboxDescription);
 
     const ingredientsList = document.createElement('ul');
-    ingredientsList.id = 'lightbox-recipe-ingredients';
     recipe.ingredients.forEach(ingredient => {
-        const listItem = document.createElement('li');
-        const ingredientName = document.createElement('div');
-        ingredientName.classList.add('ingredient-name');
-        ingredientName.textContent = ingredient.ingredient;
-
-        const ingredientQuantity = document.createElement('div');
-        ingredientQuantity.classList.add('ingredient-quantity');
-        ingredientQuantity.textContent = `${ingredient.quantity || ''} ${ingredient.unit || ''}`;
-
-        listItem.appendChild(ingredientName);
-        listItem.appendChild(ingredientQuantity);
-        ingredientsList.appendChild(listItem);
+        const ingredientItem = document.createElement('li');
+        ingredientItem.textContent = `${ingredient.quantity || ''} ${ingredient.unit || ''} ${ingredient.ingredient}`;
+        ingredientsList.appendChild(ingredientItem);
     });
-
-    lightbox.innerHTML = '';
-    lightbox.appendChild(img);
-    lightbox.appendChild(title);
-    lightbox.appendChild(recetteTitle);
-    lightbox.appendChild(description);
-    lightbox.appendChild(ingredientsTitle);
     lightbox.appendChild(ingredientsList);
 
-    lightboxOverlay.style.display = 'flex';
-    lightboxOverlay.setAttribute('aria-hidden', 'false');
-    updateNavigationButtons();
+    lightboxOverlay.style.display = 'block'; 
 }
 
 function closeLightboxFn() {
-    lightboxOverlay.style.display = 'none';
-    lightboxOverlay.setAttribute('aria-hidden', 'true');
+    lightboxOverlay.style.display = 'none'; 
+    lightbox.innerHTML = '';  
 }
+
+lightboxClose.addEventListener('click', closeLightboxFn);
 
 function updateNavigationButtons() {
-    prevButton.disabled = currentRecipeIndex === 0;
-    nextButton.disabled = currentRecipeIndex === recipes.length - 1;
+    const prevButton = document.querySelector('.nav-lightbox.prev');
+    const nextButton = document.querySelector('.nav-lightbox.next');
+    
+    if (prevButton && nextButton) {
+        prevButton.disabled = currentRecipeIndex === 0;
+        nextButton.disabled = currentRecipeIndex === recipes.length - 1;
+
+        prevButton.addEventListener('click', () => {
+            if (currentRecipeIndex > 0) {
+                currentRecipeIndex--;
+            } else {
+                currentRecipeIndex = recipes.length - 1;
+            }
+            currentRecipe = recipes[currentRecipeIndex];
+            openLightbox(currentRecipe, currentRecipeIndex);
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentRecipeIndex < recipes.length - 1) {
+                currentRecipeIndex++;
+            } else {
+                currentRecipeIndex = 0;
+            }
+            currentRecipe = recipes[currentRecipeIndex];
+            openLightbox(currentRecipe, currentRecipeIndex);
+        });
+    } else {
+        console.error("Les boutons de navigation n'ont pas été trouvés.");
+    }
 }
-
-prevButton.addEventListener('click', () => {
-    if (currentRecipeIndex > 0) {
-        currentRecipeIndex--;
-    } else {
-        currentRecipeIndex = recipes.length - 1;
-    }
-    currentRecipe = recipes[currentRecipeIndex];
-    openLightbox(currentRecipe, currentRecipeIndex);
-});
-
-nextButton.addEventListener('click', () => {
-    if (currentRecipeIndex < recipes.length - 1) {
-        currentRecipeIndex++;
-    } else {
-        currentRecipeIndex = 0;
-    }
-    currentRecipe = recipes[currentRecipeIndex];
-    openLightbox(currentRecipe, currentRecipeIndex);
-});
-
-closeLightbox.addEventListener('click', closeLightboxFn);
 
 function addLightboxToImages() {
     const recipeImages = document.querySelectorAll('.recipe-image');
@@ -233,13 +198,14 @@ function updateRecipeCount(recipes) {
 }
 
 function displayRecipes(recipes) {
-    recipeSection.innerHTML = '';
+    recipeSection.innerHTML = ''; 
     recipes.forEach(recipe => {
-        const card = RecipeCard.createCard(recipe);
-        recipeSection.appendChild(card);
+        const card = RecipeCard.createCard(recipe);  
+        recipeSection.appendChild(card); 
     });
     updateRecipeCount(recipes);
-    addLightboxToImages();
+    addLightboxToImages();  
+    updateNavigationButtons();  
 }
 
 function initializeFilters(recipes) {
@@ -253,133 +219,166 @@ function initializeFilters(recipes) {
         recipe.ustensils.forEach(ustensil => ustensils.add(ustensil.toLowerCase()));
     });
 
-    populateFilterOptions(ingredientFilter, Array.from(ingredients));
-    populateFilterOptions(applianceFilter, Array.from(appliances));
-    populateFilterOptions(ustensilFilter, Array.from(ustensils));
-}
+    ingredientFilter.setAttribute('placeholder', 'Tapez un ingrédient...');
+    ingredientFilter.addEventListener('input', (event) => {
+        const value = event.target.value.trim().toLowerCase();
+        showSuggestions(value, Array.from(ingredients), 'ingredient-suggestions');
+    });
 
-function populateFilterOptions(selectElement, options) {
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-        selectElement.appendChild(optionElement);
+    applianceFilter.setAttribute('placeholder', 'Tapez un appareil...');
+    applianceFilter.addEventListener('input', (event) => {
+        const value = event.target.value.trim().toLowerCase();
+        showSuggestions(value, Array.from(appliances), 'appliance-suggestions');
+    });
+
+    ustensilFilter.setAttribute('placeholder', 'Tapez un ustensile...');
+    ustensilFilter.addEventListener('input', (event) => {
+        const value = event.target.value.trim().toLowerCase();
+        showSuggestions(value, Array.from(ustensils), 'utensil-suggestions');
     });
 }
 
-ingredientFilter.addEventListener('change', (event) => {
-    const value = event.target.value.trim().toLowerCase();
-    if (value && !selectedFilters.ingredients.includes(value)) {
-        selectedFilters.ingredients.push(value);
-        applyFilters();
-    }
-});
+function showSuggestions(value, data, suggestionContainerId) {
+    const suggestionsContainer = document.querySelector(`#${suggestionContainerId}`);
+    suggestionsContainer.innerHTML = '';
 
-applianceFilter.addEventListener('change', (event) => {
-    const value = event.target.value.trim().toLowerCase();
-    if (value && !selectedFilters.appliances.includes(value)) {
-        selectedFilters.appliances.push(value);
-        applyFilters();
-    }
-});
+    if (value === '') return;
 
-ustensilFilter.addEventListener('change', (event) => {
-    const value = event.target.value.trim().toLowerCase();
-    if (value && !selectedFilters.ustensils.includes(value)) {
-        selectedFilters.ustensils.push(value);
-        applyFilters();
+    const filteredSuggestions = data.filter(item => item.includes(value));
+    filteredSuggestions.forEach(suggestion => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.classList.add('suggestion-item');
+        suggestionItem.textContent = suggestion;
+        suggestionItem.addEventListener('click', () => {
+            handleSuggestionClick(suggestion, suggestionContainerId);
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+    });
+}
+
+function handleSuggestionClick(suggestion, suggestionContainerId) {
+    if (suggestionContainerId === 'ingredient-suggestions') {
+        if (!selectedFilters.ingredients.includes(suggestion)) {
+            selectedFilters.ingredients.push(suggestion);
+            updateSelectedTags();
+        }
+    } else if (suggestionContainerId === 'appliance-suggestions') {
+        if (!selectedFilters.appliances.includes(suggestion)) {
+            selectedFilters.appliances.push(suggestion);
+            updateSelectedTags();
+        }
+    } else if (suggestionContainerId === 'utensil-suggestions') {
+        if (!selectedFilters.ustensils.includes(suggestion)) {
+            selectedFilters.ustensils.push(suggestion);
+            updateSelectedTags();
+        }
     }
-});
+
+    filterRecipes(); 
+}
+
+function updateSelectedTags() {
+    selectedTagsContainer.innerHTML = '';
+
+    selectedFilters.ingredients.forEach(tag => {
+        createTag(tag, 'ingredient');
+    });
+
+    selectedFilters.appliances.forEach(tag => {
+        createTag(tag, 'appliance');
+    });
+
+    selectedFilters.ustensils.forEach(tag => {
+        createTag(tag, 'utensil');
+    });
+}
+
+function createTag(tag, type) {
+    const tagElement = document.createElement('div');
+    tagElement.classList.add('selected-tag');
+    tagElement.textContent = tag;
+
+    const removeButton = document.createElement('span');
+    removeButton.classList.add('remove-tag');
+    removeButton.textContent = '×';
+    removeButton.addEventListener('click', () => removeTag(tag, type));
+
+    tagElement.appendChild(removeButton);
+    selectedTagsContainer.appendChild(tagElement);
+}
+
+function removeTag(tag, type) {
+    if (type === 'ingredient') {
+        selectedFilters.ingredients = selectedFilters.ingredients.filter(item => item !== tag);
+    } else if (type === 'appliance') {
+        selectedFilters.appliances = selectedFilters.appliances.filter(item => item !== tag);
+    } else if (type === 'utensil') {
+        selectedFilters.ustensils = selectedFilters.ustensils.filter(item => item !== tag);
+    }
+
+    updateSelectedTags();  
+    filterRecipes(); 
+}
 
 searchButton.addEventListener('click', () => {
-    const query = searchInput.value.trim().toLowerCase();
+    const query = searchInput.value.trim();
     selectedFilters.searchQuery = query;
-    searchInput.value = '';  
-    applyFilters();
+    filterRecipes();
 });
 
-function applyFilters() {
-    let filteredRecipes = recipes;
+function filterRecipes() {
+    let filteredRecipes = recipes.filter(recipe => {
+        let ingredientMatch = true;
+        let applianceMatch = true;
+        let ustensilMatch = true;
+        let searchMatch = true;
 
-    filteredRecipes = filteredRecipes.filter(recipe => {
-        return selectedFilters.ingredients.every(ingredient =>
-            recipe.ingredients.some(i => i.ingredient.toLowerCase() === ingredient)
-        );
-    });
-
-    filteredRecipes = filteredRecipes.filter(recipe => {
-        return selectedFilters.appliances.every(appliance =>
-            recipe.appliance.toLowerCase() === appliance
-        );
-    });
-
-    filteredRecipes = filteredRecipes.filter(recipe => {
-        return selectedFilters.ustensils.every(ustensil =>
-            recipe.ustensils.some(u => u.toLowerCase() === ustensil)
-        );
-    });
-
-    if (selectedFilters.searchQuery) {
-        filteredRecipes = filteredRecipes.filter(recipe =>
-            recipe.name.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()) ||
-            recipe.description.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()) ||
-            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()))
-        );
-    }
-
-    displayRecipes(filteredRecipes);
-    updateTagsDisplay();
-}
-
-function updateTagsDisplay() {
-    selectedTagsContainer.innerHTML = ''; 
-
-    Object.keys(selectedFilters).forEach(filterKey => {
-        const filterValues = selectedFilters[filterKey];
-        if (Array.isArray(filterValues) && filterValues.length > 0) {
-            filterValues.forEach(value => {
-                const tag = document.createElement('span');
-                tag.classList.add('filter-tag'); 
-                tag.textContent = value;
-
-                const removeButton = document.createElement('button');
-                removeButton.textContent = '×';
-                removeButton.classList.add('remove-tag');
-                removeButton.setAttribute('aria-label', 'Remove this filter');
-                removeButton.addEventListener('click', () => {
-                    const index = selectedFilters[filterKey].indexOf(value);
-                    if (index > -1) {
-                        selectedFilters[filterKey].splice(index, 1);
-                        applyFilters();
+        
+        if (selectedFilters.ingredients.length > 0) {
+            ingredientMatch = false;
+            selectedFilters.ingredients.forEach(ingredient => {
+                recipe.ingredients.forEach(ing => {
+                    if (ing.ingredient.toLowerCase().includes(ingredient.toLowerCase())) {
+                        ingredientMatch = true; 
                     }
                 });
-
-                tag.appendChild(removeButton);
-                selectedTagsContainer.appendChild(tag);
             });
         }
+
+        
+        if (selectedFilters.appliances.length > 0) {
+            applianceMatch = false;
+            selectedFilters.appliances.forEach(appliance => {
+                if (recipe.appliance.toLowerCase().includes(appliance.toLowerCase())) {
+                    applianceMatch = true; 
+                }
+            });
+        }
+
+       
+        if (selectedFilters.ustensils.length > 0) {
+            ustensilMatch = false;
+            selectedFilters.ustensils.forEach(ustensil => {
+                recipe.ustensils.forEach(ust => {
+                    if (ust.toLowerCase().includes(ustensil.toLowerCase())) {
+                        ustensilMatch = true; 
+                    }
+                });
+            });
+        }
+
+       
+        if (selectedFilters.searchQuery !== '') {
+            searchMatch = recipe.name.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase());
+        }
+
+       
+        return ingredientMatch && applianceMatch && ustensilMatch && searchMatch;
     });
 
-    if (selectedFilters.searchQuery) {
-        const searchTag = document.createElement('span');
-        searchTag.classList.add('filter-tag'); 
-        searchTag.textContent = selectedFilters.searchQuery;
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = '×';
-        removeButton.classList.add('remove-tag');
-        removeButton.setAttribute('aria-label', 'Clear search');
-        removeButton.addEventListener('click', () => {
-            selectedFilters.searchQuery = '';
-            searchInput.value = '';
-            applyFilters();
-        });
-
-        searchTag.appendChild(removeButton);
-        selectedTagsContainer.appendChild(searchTag);
-    }
+    displayRecipes(filteredRecipes);  
 }
 
 initializeFilters(recipes);
-displayRecipes(recipes);
+filterRecipes(); 
 
