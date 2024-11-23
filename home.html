@@ -34,36 +34,37 @@
         <div class="filter-container-and-sentence">
             <div class="filter-container">
                 <div class="ingredient-filter-container">
-                    <select id="ingredient-selector" aria-label="Filtrer par ingrédient">
-                        <option value="">Ingrédients</option>
-                    </select>
+                   
+                    <input type="text" id="ingredient-selector" aria-label="Filtrer par ingrédient" placeholder="Tapez un ingrédient...">
+                 
+                    <div id="ingredient-suggestions" class="suggestions-container"></div>
                 </div>
 
                 <div class="appliance-filter-container">
-                    <select id="appliance-selector" aria-label="Filtrer par appareil">
-                        <option value="">Appareils</option>
-                    </select>
+                  
+                    <input type="text" id="appliance-selector" aria-label="Filtrer par appareil" placeholder="Tapez un appareil...">
+                    
+                    <div id="appliance-suggestions" class="suggestions-container"></div>
                 </div>
 
                 <div class="utensil-filter-container">
-                    <select id="utensil-selector" aria-label="Filtrer par ustensile">
-                        <option value="">Ustensiles</option>
-                    </select>
+             
+                    <input type="text" id="utensil-selector" aria-label="Filtrer par ustensile" placeholder="Tapez un ustensile...">
+                    <div id="utensil-suggestions" class="suggestions-container"></div>
                 </div>
             </div>
             <div id="recipe-count" class="recipe-count-container">
-                <span id="total-recipes" >...</span>
+                <span id="total-recipes">...</span>
             </div>
         </div>
 
-        <div id="selected-tags" class="selected-tags-container" >
+        <div id="selected-tags" class="selected-tags-container">
         </div>
-    </div>
+
         <div class="recipe-section">
         </div>
     </main>
 
-   
     <div class="lightbox-overlay" style="display:none;" aria-hidden="true">
         <div class="lightbox-wrapper">
             <button class="nav-lightbox prev" aria-label="Précédent"></button>
@@ -74,7 +75,6 @@
                     <h3 id="lightbox-recipe-title">Titre de la recette</h3>
                     <p id="lightbox-recipe-description">Description de la recette</p>
                     <ul id="lightbox-recipe-ingredients">
-                    
                     </ul>
                 </div>
             </div>
