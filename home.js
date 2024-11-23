@@ -17,7 +17,6 @@ const selectedFilters = {
 const searchButton = document.querySelector('.button-mobile-version');
 const searchInput = document.querySelector('.text-input');
 
-
 const lightboxOverlay = document.createElement('div');
 lightboxOverlay.classList.add('lightbox-overlay');
 document.body.appendChild(lightboxOverlay);
@@ -38,20 +37,18 @@ lightboxOverlay.appendChild(closeLightbox);
 const prevButton = document.createElement('button');
 prevButton.textContent = '<';
 prevButton.classList.add('nav-lightbox', 'prev');
-prevButton.disabled = false; 
+prevButton.disabled = false;
 
 const nextButton = document.createElement('button');
 nextButton.textContent = '>';
 nextButton.classList.add('nav-lightbox', 'next');
-nextButton.disabled = false; 
+nextButton.disabled = false;
 
 lightboxOverlay.appendChild(prevButton);
 lightboxOverlay.appendChild(nextButton);
 
-
 let currentRecipeIndex = null;
 let currentRecipe = null;
-
 
 function openLightbox(recipe, index) {
     currentRecipe = recipe;
@@ -108,18 +105,15 @@ function openLightbox(recipe, index) {
     updateNavigationButtons();
 }
 
-
 function closeLightboxFn() {
     lightboxOverlay.style.display = 'none';
     lightboxOverlay.setAttribute('aria-hidden', 'true');
 }
 
-
 function updateNavigationButtons() {
-    prevButton.disabled = currentRecipeIndex === 0;  
-    nextButton.disabled = currentRecipeIndex === recipes.length - 1;  
+    prevButton.disabled = currentRecipeIndex === 0;
+    nextButton.disabled = currentRecipeIndex === recipes.length - 1;
 }
-
 
 prevButton.addEventListener('click', () => {
     if (currentRecipeIndex > 0) {
@@ -141,9 +135,7 @@ nextButton.addEventListener('click', () => {
     openLightbox(currentRecipe, currentRecipeIndex);
 });
 
-
 closeLightbox.addEventListener('click', closeLightboxFn);
-
 
 function addLightboxToImages() {
     const recipeImages = document.querySelectorAll('.recipe-image');
@@ -155,7 +147,6 @@ function addLightboxToImages() {
         });
     });
 }
-
 
 class RecipeCard {
     constructor(recipe) {
@@ -236,12 +227,10 @@ class RecipeCard {
     }
 }
 
-
 function updateRecipeCount(recipes) {
     const recipeCount = recipes.length;
     recipeCountElement.textContent = `${recipeCount} recette${recipeCount > 1 ? 's' : ''}`;
 }
-
 
 function displayRecipes(recipes) {
     recipeSection.innerHTML = '';
@@ -252,7 +241,6 @@ function displayRecipes(recipes) {
     updateRecipeCount(recipes);
     addLightboxToImages();
 }
-
 
 function initializeFilters(recipes) {
     const ingredients = new Set();
@@ -279,45 +267,69 @@ function populateFilterOptions(selectElement, options) {
     });
 }
 
-function applyFilters() {
-    let filteredRecipes = [...recipes];
+ingredientFilter.addEventListener('change', (event) => {
+    const value = event.target.value.trim().toLowerCase();
+    if (value && !selectedFilters.ingredients.includes(value)) {
+        selectedFilters.ingredients.push(value);
+        applyFilters();
+    }
+});
 
-   
+applianceFilter.addEventListener('change', (event) => {
+    const value = event.target.value.trim().toLowerCase();
+    if (value && !selectedFilters.appliances.includes(value)) {
+        selectedFilters.appliances.push(value);
+        applyFilters();
+    }
+});
+
+ustensilFilter.addEventListener('change', (event) => {
+    const value = event.target.value.trim().toLowerCase();
+    if (value && !selectedFilters.ustensils.includes(value)) {
+        selectedFilters.ustensils.push(value);
+        applyFilters();
+    }
+});
+
+searchButton.addEventListener('click', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    selectedFilters.searchQuery = query;
+    searchInput.value = '';  
+    applyFilters();
+});
+
+function applyFilters() {
+    let filteredRecipes = recipes;
+
     filteredRecipes = filteredRecipes.filter(recipe => {
-        return selectedFilters.ingredients.every(ingredient => 
-            recipe.ingredients.some(i => i.ingredient.toLowerCase() === ingredient.toLowerCase())
+        return selectedFilters.ingredients.every(ingredient =>
+            recipe.ingredients.some(i => i.ingredient.toLowerCase() === ingredient)
         );
     });
 
- 
     filteredRecipes = filteredRecipes.filter(recipe => {
         return selectedFilters.appliances.every(appliance =>
-            recipe.appliance.toLowerCase() === appliance.toLowerCase()
+            recipe.appliance.toLowerCase() === appliance
         );
     });
 
- 
     filteredRecipes = filteredRecipes.filter(recipe => {
         return selectedFilters.ustensils.every(ustensil =>
-            recipe.ustensils.some(u => u.toLowerCase() === ustensil.toLowerCase())
+            recipe.ustensils.some(u => u.toLowerCase() === ustensil)
         );
     });
-
 
     if (selectedFilters.searchQuery) {
         filteredRecipes = filteredRecipes.filter(recipe =>
             recipe.name.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()) ||
             recipe.description.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()) ||
-            recipe.ingredients.some(ingredient =>
-                ingredient.ingredient.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase())
-            )
+            recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(selectedFilters.searchQuery.toLowerCase()))
         );
     }
 
     displayRecipes(filteredRecipes);
     updateTagsDisplay();
 }
-
 
 function updateTagsDisplay() {
     selectedTagsContainer.innerHTML = ''; 
@@ -327,19 +339,18 @@ function updateTagsDisplay() {
         if (Array.isArray(filterValues) && filterValues.length > 0) {
             filterValues.forEach(value => {
                 const tag = document.createElement('span');
-                tag.classList.add('filter-tag');
+                tag.classList.add('filter-tag'); 
                 tag.textContent = value;
-
 
                 const removeButton = document.createElement('button');
                 removeButton.textContent = '×';
                 removeButton.classList.add('remove-tag');
-                removeButton.setAttribute('aria-label', 'Remove this filter'); 
+                removeButton.setAttribute('aria-label', 'Remove this filter');
                 removeButton.addEventListener('click', () => {
                     const index = selectedFilters[filterKey].indexOf(value);
                     if (index > -1) {
                         selectedFilters[filterKey].splice(index, 1);
-                        applyFilters(); 
+                        applyFilters();
                     }
                 });
 
@@ -349,58 +360,25 @@ function updateTagsDisplay() {
         }
     });
 
-
     if (selectedFilters.searchQuery) {
         const searchTag = document.createElement('span');
-        searchTag.classList.add('filter-tag');
+        searchTag.classList.add('filter-tag'); 
         searchTag.textContent = selectedFilters.searchQuery;
 
         const removeButton = document.createElement('button');
         removeButton.textContent = '×';
         removeButton.classList.add('remove-tag');
-        removeButton.setAttribute('aria-label', 'Clear search'); 
+        removeButton.setAttribute('aria-label', 'Clear search');
         removeButton.addEventListener('click', () => {
-            selectedFilters.searchQuery = ''; 
-            applyFilters(); 
+            selectedFilters.searchQuery = '';
+            searchInput.value = '';
+            applyFilters();
         });
 
         searchTag.appendChild(removeButton);
         selectedTagsContainer.appendChild(searchTag);
     }
 }
-
-
-ingredientFilter.addEventListener('change', (e) => {
-    if (!selectedFilters.ingredients.includes(e.target.value)) {
-        selectedFilters.ingredients.push(e.target.value);
-        applyFilters(); 
-    }
-});
-
-applianceFilter.addEventListener('change', (e) => {
-    if (!selectedFilters.appliances.includes(e.target.value)) {
-        selectedFilters.appliances.push(e.target.value);
-        applyFilters(); 
-    }
-});
-
-ustensilFilter.addEventListener('change', (e) => {
-    if (!selectedFilters.ustensils.includes(e.target.value)) {
-        selectedFilters.ustensils.push(e.target.value);
-        applyFilters(); 
-    }
-});
-
-searchButton.addEventListener('click', () => {
-    selectedFilters.searchQuery = searchInput.value.trim();
-    applyFilters();
-});
-
-searchInput.addEventListener('input', (e) => {
-    selectedFilters.searchQuery = e.target.value.trim();
-    applyFilters();
-});
-
 
 initializeFilters(recipes);
 displayRecipes(recipes);
